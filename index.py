@@ -1,37 +1,90 @@
-import tkinter as tk
+# Laboratio N°4 - Informatica II
+# Eberle Javier - Iñiguez Agustin 
+# https://github.com/GlobHD/Labo4.git
 
-# ==========================================
-# 1. FUNCIONES (Se completarán más adelante)
-# ==========================================
+# Falta completar la parte de calcular el determinante y el metodo de cramer
+
+import tkinter as tk
+from tkinter import messagebox
+
+
 def borrar_valores():
-    print("Botón presionado: Borrar valores")
-    # aca limpiamos los Entry anashe
+    # 1. Limpiar todos los campos de la Matriz A
+    for fila in entradas_A:
+        for entry in fila:
+            entry.delete(0, tk.END)
+            
+    # 2. Limpiar todos los campos del vector b
+    for entry in entradas_b:
+        entry.delete(0, tk.END)
+        
+    # 3. Limpiar los campos del vector x
+    for entry in entradas_x:
+        entry.config(state=tk.NORMAL)
+        entry.delete(0, tk.END)
+        entry.config(state="readonly")
+        
+    # 4. Limpiar el campo del determinante
+    entry_det.config(state=tk.NORMAL)
+    entry_det.delete(0, tk.END)
+    entry_det.config(state="readonly")
 
 def calcular_cramer():
     print("Botón presionado: Calcular")
     # Aca tenemos que usar bloques try-except para validar datos y calcular x
 
 def calcular_determinante():
-    print("Botón presionado: Calcular det.")
-    # calculamos el determinante de la dimensión seleccionada
+    dim = dimension_var.get()
+    matriz_A = []
+    
+    try:
+        # Extraemos únicamente las filas y columnas según la dimensión elegida
+        for i in range(dim):
+            fila = []
+            for j in range(dim):
+                # float() convierte el texto a número. Si hay texto inválido o vacío, salta al except.
+                valor = float(entradas_A[i][j].get())
+                fila.append(valor)
+            matriz_A.append(fila)
+            
+        # Si el bucle termina sin errores, tenemos la matriz limpia.
+        print("Matriz lista para calcular:", matriz_A)
+        
+        # --- ACÁ IRÁ LA LÓGICA MATEMÁTICA DEL CÁLCULO ---
+        
+    except ValueError:
+        # Atajamos el error de conversión y mostramos un pop-up visual
+        messagebox.showerror("Error de datos", "Por favor, complete todos los campos habilitados únicamente con números.")
 
 def actualizar_dimension():
     dim = dimension_var.get()
     print(f"Dimensión cambiada a: {dim}x{dim}")
-    #  habilitamos/deshabilitamos campos según la dimensión
+    
+    # Recorremos las 4 filas y columnas posibles
+    for i in range(4):
+        # Para los vectores b y x: mostramos solo las filas correspondientes a la dimensión
+        if i < dim:
+            entradas_b[i].grid()
+            entradas_x[i].grid()
+        else:
+            entradas_b[i].grid_remove()
+            entradas_x[i].grid_remove()
+            
+        # Para la matriz A: hacemos lo mismo iterando por cada columna (j)
+        for j in range(4):
+            if i < dim and j < dim:
+                entradas_A[i][j].grid()
+            else:
+                entradas_A[i][j].grid_remove()
 
-# ==========================================
-# 2. CONFIGURACIÓN DE LA VENTANA PRINCIPAL
-# ==========================================
+# Configuración de la ventana principal
 ventana = tk.Tk()
 ventana.title("Resolución de sistemas de ecuaciones lineales mediante el método de Cramer")
-ventana.geometry("450x350")
+ventana.geometry("550x400")
 #la resolucion la tenemos que ver, no se ve muy bien
 
-# ==========================================
-# 3. VARIABLES DE CONTROL
-# ==========================================
-dimension_var = tk.IntVar(value=3) # Por defecto arranca en 3x3 xd
+
+dimension_var = tk.IntVar(value=3) 
 
 # ==========================================
 # 4. CREACIÓN DE WIDGETS (INTERFAZ)
@@ -99,7 +152,3 @@ tk.Button(frame_inferior, text="Calcular det.", command=calcular_determinante).g
 
 # Bucle principal de la aplicación
 ventana.mainloop()
-#IMPORTANTE: No se puede usar el metodo de cramer si el determinante es 0, hay que poner un mensaje de error en ese caso
-# tambien hayq ue verificar el valor de la entrada de la matriz A y el vector b, si no son numeros hay que poner un mensaje de error
-#tyambien necesitamos un mensaje de error si el sistema no tiene solucion o tiene infinitas soluciones, eso se puede verificar con el determinante y el rango de la matriz A y la matriz aumentada [A|b]
-#Todavia no se implemento la parte de calcular el determinante, eso se puede hacer con numpy o con una funcion recursiva que calcule el determinante de una matriz, SUERTE JAVOOOOOOOO
